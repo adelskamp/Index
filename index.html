@@ -6,361 +6,100 @@
 <title>Carolines Tagesplan</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #F8F5F0; --ink: #1C1917; --ink-light: #57534E; --ink-faint: #A8A29E;
+  --border: #E4DDD4; --white: #FFFFFF;
+  --red: #9B1C1C; --red-bg: #FEF2F2;
+  --amber: #92400E; --amber-bg: #FFFBEB;
+  --teal-bg: #F0FDFA; --teal-dot: #14B8A6;
+  --gray-bg: #FAFAF9;
+}
+body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--ink); min-height: 100vh; }
+.app { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
 
-  :root {
-    --cream: #F8F5F0;
-    --ink: #1C1917;
-    --ink-light: #57534E;
-    --ink-faint: #A8A29E;
-    --border: #E4DDD4;
-    --white: #FFFFFF;
-    --red: #9B1C1C;
-    --red-bg: #FEF2F2;
-    --red-dot: #EF4444;
-    --amber: #92400E;
-    --amber-bg: #FFFBEB;
-    --amber-dot: #F59E0B;
-    --teal: #134E4A;
-    --teal-bg: #F0FDFA;
-    --teal-dot: #14B8A6;
-    --pink: #831843;
-    --pink-bg: #FDF2F8;
-    --pink-dot: #EC4899;
-    --gray: #44403C;
-    --gray-bg: #FAFAF9;
-    --gray-dot: #A8A29E;
-  }
+.header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+.header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 600; line-height: 1.1; }
+.title em { font-style: italic; font-weight: 400; }
+.datetime { text-align: right; }
+.date-display { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; }
+.time-display { font-size: 1.75rem; font-weight: 300; color: var(--ink-light); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.greeting { margin-top: 0.75rem; font-size: 0.875rem; color: var(--ink-faint); font-weight: 300; }
+.progress-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 1rem; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--teal-dot); border-radius: 2px; transition: width 0.4s ease; }
+.progress-label { font-size: 11px; color: var(--ink-faint); margin-top: 5px; font-weight: 300; }
 
-  body {
-    background: var(--cream);
-    font-family: 'DM Sans', sans-serif;
-    color: var(--ink);
-    min-height: 100vh;
-    padding: 0;
-  }
+.legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
+.legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--ink-light); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-  .app {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-  }
+.edit-toggle { display: flex; justify-content: flex-end; margin-bottom: 1.5rem; }
+.btn-edit { background: var(--ink); color: var(--white); border: none; border-radius: 20px; padding: 7px 18px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.btn-edit.active { background: var(--teal-dot); }
 
-  /* HEADER */
-  .header {
-    margin-bottom: 2.5rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 1.5rem;
-  }
+.section { margin-bottom: 2rem; }
+.section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+.section-title { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); white-space: nowrap; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-count { font-size: 0.7rem; color: var(--ink-faint); }
 
-  .header-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
+.task-list { display: flex; flex-direction: column; gap: 6px; }
+.task-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 12px; transition: box-shadow 0.15s, transform 0.15s; position: relative; }
+.task-card.dragging { opacity: 0.5; transform: scale(0.98); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.task-card.drag-over { border-color: var(--ink-faint); box-shadow: 0 0 0 2px var(--ink-faint); }
+.task-card.done-card { opacity: 0.45; background: var(--gray-bg); }
+.task-card.done-card .task-text { text-decoration: line-through; color: var(--ink-faint); }
+.type-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.task-content { flex: 1; min-width: 0; }
+.task-text { font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+.task-time { font-size: 11px; color: var(--ink-faint); margin-top: 2px; font-weight: 300; }
+.task-note { font-size: 11px; color: var(--ink-faint); margin-top: 3px; font-style: italic; }
 
-  .title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.1;
-  }
+.btn-done { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; color: var(--ink-faint); font-size: 11px; flex-shrink: 0; }
+.btn-done:hover, .task-card.done-card .btn-done { border-color: var(--teal-dot); background: var(--teal-bg); color: var(--teal-dot); }
 
-  .title em {
-    font-style: italic;
-    font-weight: 400;
-  }
+.drag-handle { display: flex; flex-direction: column; gap: 2px; padding-top: 5px; cursor: grab; flex-shrink: 0; opacity: 0.25; transition: opacity 0.15s; }
+.task-card:hover .drag-handle { opacity: 0.6; }
+.drag-handle span { display: block; width: 14px; height: 1.5px; background: var(--ink); border-radius: 2px; }
 
-  .datetime {
-    text-align: right;
-  }
+.btn-delete { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #FCA5A5; background: #FEF2F2; cursor: pointer; display: none; align-items: center; justify-content: center; color: var(--red); font-size: 15px; line-height: 1; flex-shrink: 0; }
+.btn-delete:hover { background: var(--red); color: white; }
+.edit-mode .btn-delete { display: flex; }
 
-  .date-display {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    color: var(--ink);
-    font-weight: 600;
-  }
+.btn-add { width: 100%; padding: 10px; border: 1px dashed var(--border); border-radius: 10px; background: transparent; color: var(--ink-faint); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; display: none; transition: all 0.15s; margin-top: 4px; }
+.btn-add:hover { border-color: var(--ink-faint); color: var(--ink); background: var(--white); }
+.edit-mode .btn-add { display: block; }
 
-  .time-display {
-    font-size: 1.75rem;
-    font-weight: 300;
-    color: var(--ink-light);
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-  }
+.empty { text-align: center; padding: 2rem; color: var(--ink-faint); font-size: 13px; font-style: italic; border: 1px dashed var(--border); border-radius: 10px; }
 
-  .greeting {
-    margin-top: 0.75rem;
-    font-size: 0.875rem;
-    color: var(--ink-faint);
-    font-weight: 300;
-  }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: none; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; }
+.modal h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 1.25rem; }
+.modal label { font-size: 11px; color: var(--ink-faint); display: block; margin-bottom: 4px; margin-top: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+.modal label:first-of-type { margin-top: 0; }
+.modal input, .modal select, .modal textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--ink); background: var(--white); outline: none; -webkit-appearance: none; }
+.modal input:focus, .modal textarea:focus { border-color: var(--ink-faint); }
+.modal textarea { resize: vertical; min-height: 60px; }
+.color-picker { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.color-swatch { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; transition: all 0.15s; }
+.color-swatch.selected { border-color: var(--ink); transform: scale(1.15); }
+.modal-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+.btn-save { flex: 1; padding: 13px; background: var(--ink); color: white; border: none; border-radius: 10px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.btn-cancel { padding: 13px 20px; background: transparent; color: var(--ink-faint); border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
 
-  /* LEGEND */
-  .legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-  }
+.footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--ink-faint); text-align: center; font-style: italic; }
 
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    color: var(--ink-light);
-  }
-
-  .legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  /* SECTIONS */
-  .section {
-    margin-bottom: 2rem;
-  }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .section-title {
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
-
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .section-count {
-    font-size: 0.7rem;
-    color: var(--ink-faint);
-    font-weight: 400;
-  }
-
-  /* TASK CARDS */
-  .task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .task-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    transition: box-shadow 0.15s ease, transform 0.15s ease;
-    cursor: grab;
-    position: relative;
-  }
-
-  .task-card:active { cursor: grabbing; }
-
-  .task-card.dragging {
-    opacity: 0.5;
-    transform: scale(0.98);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
-
-  .task-card.drag-over {
-    border-color: var(--ink-faint);
-    box-shadow: 0 0 0 2px var(--ink-faint);
-  }
-
-  .task-card.done-card {
-    opacity: 0.45;
-    background: var(--gray-bg);
-  }
-
-  .task-card.done-card .task-text {
-    text-decoration: line-through;
-    color: var(--ink-faint);
-  }
-
-  /* TYPE INDICATOR */
-  .type-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 4px;
-  }
-
-  /* TASK CONTENT */
-  .task-content {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .task-text {
-    font-size: 13.5px;
-    color: var(--ink);
-    line-height: 1.5;
-    font-weight: 400;
-  }
-
-  .task-time {
-    font-size: 11px;
-    color: var(--ink-faint);
-    margin-top: 2px;
-    font-weight: 300;
-  }
-
-  .task-note {
-    font-size: 11px;
-    color: var(--ink-faint);
-    margin-top: 3px;
-    font-style: italic;
-  }
-
-  /* BADGES */
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 500;
-    padding: 1px 7px;
-    border-radius: 20px;
-    margin-left: 6px;
-    vertical-align: middle;
-  }
-  .badge-red { background: var(--red-bg); color: var(--red); }
-  .badge-amber { background: var(--amber-bg); color: var(--amber); }
-
-  /* ACTIONS */
-  .task-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    flex-shrink: 0;
-  }
-
-  .btn-done {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-    color: var(--ink-faint);
-    font-size: 11px;
-  }
-
-  .btn-done:hover {
-    border-color: var(--teal-dot);
-    background: var(--teal-bg);
-    color: var(--teal-dot);
-  }
-
-  .task-card.done-card .btn-done {
-    background: var(--teal-bg);
-    border-color: var(--teal-dot);
-    color: var(--teal-dot);
-  }
-
-  /* DRAG HANDLE */
-  .drag-handle {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding-top: 5px;
-    cursor: grab;
-    flex-shrink: 0;
-    opacity: 0.3;
-    transition: opacity 0.15s;
-  }
-
-  .task-card:hover .drag-handle { opacity: 0.7; }
-
-  .drag-handle span {
-    display: block;
-    width: 14px;
-    height: 1.5px;
-    background: var(--ink);
-    border-radius: 2px;
-  }
-
-  /* EMPTY STATE */
-  .empty {
-    text-align: center;
-    padding: 2rem;
-    color: var(--ink-faint);
-    font-size: 13px;
-    font-style: italic;
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-  }
-
-  /* PROGRESS */
-  .progress-bar {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    margin-top: 1rem;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--teal-dot);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  .progress-label {
-    font-size: 11px;
-    color: var(--ink-faint);
-    margin-top: 5px;
-    font-weight: 300;
-  }
-
-  /* FOOTER */
-  .footer {
-    margin-top: 3rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    font-size: 11px;
-    color: var(--ink-faint);
-    text-align: center;
-    font-style: italic;
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 480px) {
-    .app { padding: 1.25rem 1rem 3rem; }
-    .title { font-size: 1.5rem; }
-    .time-display { font-size: 1.4rem; }
-  }
+@media (max-width: 480px) {
+  .app { padding: 1.25rem 1rem 4rem; }
+  .title { font-size: 1.5rem; }
+  .time-display { font-size: 1.4rem; }
+}
 </style>
 </head>
 <body>
 <div class="app">
-
-  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
       <div>
@@ -372,24 +111,24 @@
         <div class="time-display" id="time-display"></div>
       </div>
     </div>
-    <div class="progress-bar" style="margin-top:1.25rem">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     <div class="progress-label" id="progress-label">0 von 0 Aufgaben erledigt</div>
   </div>
 
-  <!-- LEGEND -->
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#EC4899"></div> Fixer Termin</div>
     <div class="legend-item"><div class="legend-dot" style="background:#EF4444"></div> Dringend</div>
     <div class="legend-item"><div class="legend-dot" style="background:#F59E0B"></div> Zeitkritisch</div>
     <div class="legend-item"><div class="legend-dot" style="background:#14B8A6"></div> Finanzen</div>
     <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div> Lernen</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#A8A29E"></div> Haushalt / Sonstiges</div>
     <div class="legend-item"><div class="legend-dot" style="background:#8B5CF6"></div> Social Media</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#A8A29E"></div> Sonstiges</div>
   </div>
 
-  <!-- SECTION 1: FIXTERMINE -->
+  <div class="edit-toggle">
+    <button class="btn-edit" id="btn-edit" onclick="toggleEditMode()">✏️ Bearbeiten</button>
+  </div>
+
   <div class="section">
     <div class="section-header">
       <div class="section-title">📅 Fixtermine</div>
@@ -397,9 +136,9 @@
       <div class="section-count" id="count-fixed"></div>
     </div>
     <div class="task-list" id="list-fixed"></div>
+    <button class="btn-add" onclick="openModal('fixed')">+ Termin hinzufügen</button>
   </div>
 
-  <!-- SECTION 2: NOTWENDIGE AUFGABEN -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">✦ Notwendige Aufgaben</div>
@@ -407,9 +146,9 @@
       <div class="section-count" id="count-required"></div>
     </div>
     <div class="task-list" id="list-required"></div>
+    <button class="btn-add" onclick="openModal('required')">+ Aufgabe hinzufügen</button>
   </div>
 
-  <!-- SECTION 3: LÜCKENFÜLLER -->
   <div class="section">
     <div class="section-header">
       <div class="section-title">◌ Lückenfüller</div>
@@ -417,376 +156,347 @@
       <div class="section-count" id="count-filler"></div>
     </div>
     <div class="task-list" id="list-filler"></div>
+    <button class="btn-add" onclick="openModal('filler')">+ Lückenfüller hinzufügen</button>
   </div>
 
-  <div class="footer">Aktualisiert von Claude · Tippe "Tagesplan" um die neueste Version zu laden</div>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">🔁 Tägliche Routinen</div>
+      <div class="section-line"></div>
+      <div class="section-count" id="count-routines"></div>
+    </div>
+    <div class="task-list" id="list-routines"></div>
+  </div>
+
+  <div class="footer">Tippe „✏️ Bearbeiten" um Aufgaben hinzuzufügen, zu bearbeiten oder zu löschen</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3 id="modal-title">Aufgabe hinzufügen</h3>
+    <label>Aufgabe *</label>
+    <input type="text" id="inp-text" placeholder="z.B. Arzttermin Dr. Müller">
+    <label>Uhrzeit / Zeitraum</label>
+    <input type="text" id="inp-time" placeholder="z.B. 10:00 Uhr">
+    <label>Notiz</label>
+    <textarea id="inp-note" placeholder="z.B. Unterlagen mitbringen"></textarea>
+    <label>Farbe</label>
+    <div class="color-picker" id="color-picker"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Abbrechen</button>
+      <button class="btn-save" onclick="saveTask()">Speichern</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// ============================================================
-// WIEDERKEHRENDE SOCIAL MEDIA AUFGABEN (automatisch nach Wochentag)
-// 0=So, 1=Mo, 2=Di, 3=Mi, 4=Do, 5=Fr, 6=Sa
-// ============================================================
-function getSocialMediaTasks() {
-  const day = new Date().getDay();
-  const tasks = [];
+const COLORS = {
+  pink:'#EC4899', red:'#EF4444', amber:'#F59E0B',
+  teal:'#14B8A6', blue:'#3B82F6', purple:'#8B5CF6', gray:'#A8A29E'
+};
 
-  if (day === 2) tasks.push({
-    id: "sm_ig_di", text: "Instagram Post veröffentlichen",
-    time: "19:00–20:00 Uhr", note: "Vorausgedacht · Zielgruppe 40–60 & 55–65",
-    type: "purple", done: false
-  });
-  if (day === 3) tasks.push({
-    id: "sm_fb_mi", text: "Facebook Post veröffentlichen",
-    time: "10:00–11:00 oder 15:00–16:00 Uhr", note: "Vorausgedacht · Zielgruppe 65+",
-    type: "purple", done: false
-  });
-  if (day === 4) tasks.push({
-    id: "sm_ig_do", text: "Instagram Post veröffentlichen",
-    time: "19:00–20:00 Uhr", note: "Vorausgedacht · Zielgruppe 40–60 & 55–65",
-    type: "purple", done: false
-  });
-  if (day === 6) {
-    tasks.push({ id: "sm_fb_sa", text: "Facebook Post veröffentlichen",
-      time: "10:00 Uhr", note: "Vorausgedacht · Zielgruppe 65+", type: "purple", done: false });
-    tasks.push({ id: "sm_ig_sa", text: "Instagram Post veröffentlichen",
-      time: "10:00 Uhr", note: "Vorausgedacht · Zielgruppe 40–60 & 55–65", type: "purple", done: false });
+// Tägliche Routinen (immer sichtbar)
+function getDailyRoutines() {
+  return [
+    {id:'daily_depot', text:'Aktiendepot checken', time:'~10 min', color:'#14B8A6'},
+    {id:'daily_hb', text:'Handelsblatt lesen', time:'~10 min', color:'#3B82F6'},
+    {id:'daily_aufraeum', text:'Wohnung aufräumen', time:'~10 min', color:'#A8A29E'}
+  ];
+}
+
+// Wöchentliche Routinen (nach Wochentag)
+function getWeeklyRoutines() {
+  const d = new Date().getDay();
+  const t = [];
+  if(d===0) t.push({id:'wk_blumen', text:'Blumen gießen 🌱', color:'#14B8A6'});
+  if(d===1) t.push({id:'wk_staubsaugen', text:'Staubsaugen', color:'#A8A29E'});
+  if(d===3) t.push({id:'wk_nasswischen', text:'Nass wischen', color:'#A8A29E'});
+  if(d===5) t.push({id:'wk_staubwischen', text:'Staubwischen', color:'#A8A29E'});
+  return t;
+}
+
+// Social Media — automatisch nach Wochentag
+function getSocialTasks() {
+  const d = new Date().getDay();
+  const t = [];
+  if(d===2) t.push({id:'sm_ig_di',text:'Instagram Post veröffentlichen',time:'19:00–20:00 Uhr',note:'Vorausgedacht · Zielgruppe 40–60 & 55–65',color:'#8B5CF6'});
+  if(d===3) t.push({id:'sm_fb_mi',text:'Facebook Post veröffentlichen',time:'10:00–11:00 oder 15:00–16:00 Uhr',note:'Vorausgedacht · Zielgruppe 65+',color:'#8B5CF6'});
+  if(d===4) t.push({id:'sm_ig_do',text:'Instagram Post veröffentlichen',time:'19:00–20:00 Uhr',note:'Vorausgedacht · Zielgruppe 40–60 & 55–65',color:'#8B5CF6'});
+  if(d===6){
+    t.push({id:'sm_fb_sa',text:'Facebook Post veröffentlichen',time:'10:00 Uhr',note:'Vorausgedacht · Zielgruppe 65+',color:'#8B5CF6'});
+    t.push({id:'sm_ig_sa',text:'Instagram Post veröffentlichen',time:'10:00 Uhr',note:'Vorausgedacht · Zielgruppe 40–60 & 55–65',color:'#8B5CF6'});
   }
-  if (day === 0) tasks.push({
-    id: "sm_ig_so", text: "Instagram Post veröffentlichen (optional)",
-    note: "Vorausgedacht · nur wenn Inhalt passt", type: "purple", done: false
-  });
-  if (day === 1 || day === 5) tasks.push({
-    id: "sm_story", text: "Instagram Story posten",
-    time: "08:00–09:00 oder 20:00 Uhr", note: "Vorausgedacht · flexibel",
-    type: "purple", done: false
-  });
-
-  return tasks;
+  if(d===0) t.push({id:'sm_ig_so',text:'Instagram Post veröffentlichen (optional)',note:'Vorausgedacht · nur wenn Inhalt passt',color:'#8B5CF6'});
+  if(d===1||d===5) t.push({id:'sm_story',text:'Instagram Story posten',time:'08:00–09:00 oder 20:00 Uhr',note:'Vorausgedacht · flexibel',color:'#8B5CF6'});
+  return t;
 }
 
-// ============================================================
-// AUFGABEN — wird von Claude täglich aktualisiert
-// ============================================================
-const TASKS = {
-  fixed: [
-    {
-      id: "f1",
-      text: "Vermögensaufbau Fortgeschrittene",
-      time: "10:00 Uhr",
-      type: "pink",
-      done: false
-    },
-    {
-      id: "f2",
-      text: "Investment Navigator 360 – Live",
-      time: "11:00 Uhr",
-      type: "pink",
-      done: false
-    },
-    {
-      id: "f3",
-      text: "Mittagessen bei Mama · Handwerker beaufsichtigen",
-      time: "13:00 Uhr",
-      note: "Bücher zur Bücherei auf dem Hinweg abgeben!",
-      type: "pink",
-      done: false
-    },
-    {
-      id: "f4",
-      text: "VHS: Kosten- und Leistungsrechnung",
-      time: "18:00 Uhr",
-      type: "pink",
-      done: false
-    },
-    {
-      id: "f5",
-      text: "VHS: Einstieg Finanzbuchhaltung",
-      time: "20:00 Uhr",
-      type: "pink",
-      done: false
-    }
-  ],
-  required: [
-    {
-      id: "r1",
-      text: "Alter Finanzkurs — Block 1",
-      time: "Zwischen 12:00 und 13:00 Uhr · ~45 min",
-      badge: { text: "bis 12. Mai", type: "red" },
-      type: "red",
-      done: false
-    },
-    {
-      id: "r2",
-      text: "Social-Media-Posts posten",
-      note: "Erste Posts heute veröffentlichen",
-      type: "gray",
-      done: false
-    }
-  ],
-  filler: [
-    {
-      id: "l1",
-      text: "Cap Trader — Konto eröffnen",
-      note: "Online-Antrag · ~30 min",
-      type: "teal",
-      done: false
-    },
-    {
-      id: "l2",
-      text: "Anthropic Academy — Claude 101 starten",
-      note: "Zwischen Rückkehr von Mama und VHS · ~1h",
-      type: "blue",
-      done: false
-    }
-  ]
-};
+// Storage
+const STORAGE_KEY = 'caroline_tagesplan_v3';
+const DONE_KEY = 'caroline_done_v3';
 
-// ============================================================
-// DATUM & UHRZEIT
-// ============================================================
-const DAYS = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
-const MONTHS = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('time-display').textContent = `${h}:${m}`;
-
-  const day = DAYS[now.getDay()];
-  const date = now.getDate();
-  const month = MONTHS[now.getMonth()];
-  const year = now.getFullYear();
-  document.getElementById('date-display').textContent = `${day}, ${date}. ${month} ${year}`;
-
-  const hour = now.getHours();
-  let greeting = '';
-  if (hour < 10) greeting = 'Guter Start in den Tag 🌤';
-  else if (hour < 13) greeting = 'Schöner Vormittag ☀️';
-  else if (hour < 17) greeting = 'Guter Nachmittag 🌿';
-  else if (hour < 20) greeting = 'Schöner Abend 🌇';
-  else greeting = 'Gute Nacht bald 🌙';
-  document.getElementById('greeting').textContent = greeting;
+function defaultTasks() {
+  return {
+    fixed: [
+      {id:'f1',text:'Vermögensaufbau Fortgeschrittene',time:'10:00 Uhr',color:'#EC4899'},
+      {id:'f2',text:'Investment Navigator 360 – Live',time:'11:00 Uhr',color:'#EC4899'},
+      {id:'f3',text:'Mittagessen bei Mama · Handwerker beaufsichtigen',time:'13:00 Uhr',note:'Bücher zur Bücherei auf dem Hinweg abgeben!',color:'#EC4899'},
+      {id:'f4',text:'VHS: Kosten- und Leistungsrechnung',time:'18:00 Uhr',color:'#EC4899'},
+      {id:'f5',text:'VHS: Einstieg Finanzbuchhaltung',time:'20:00 Uhr',color:'#EC4899'}
+    ],
+    required: [
+      {id:'r1',text:'Alter Finanzkurs — Block 1',time:'12:00–13:00 Uhr · ~45 min',note:'Deadline: 12. Mai',color:'#EF4444'},
+      {id:'r2',text:'Überweisung AKNW — Restbetrag 2024',color:'#14B8A6'},
+      {id:'r3',text:'Überweisung AKNW — Beitrag 2026',color:'#14B8A6'},
+      {id:'r4',text:'Anmeldung Virenprogramm von Peter',color:'#A8A29E'},
+      {id:'r5',text:'Antwort Headhunter Xing',color:'#A8A29E'},
+      {id:'r6',text:'Antrag Nachtrag Rentenpunkte DRV',color:'#A8A29E'},
+      {id:'r7',text:'Email an Nice Publishing',color:'#A8A29E'},
+      {id:'r8',text:'Termin Schlaflabor buchen',note:'Für Januar 2027',color:'#F59E0B'},
+      {id:'r9',text:'Mydays — Termin Parfumherstellung buchen',color:'#F59E0B'},
+      {id:'r10',text:'Bescheinigung VHS über KI im Büro ausstellen lassen',color:'#A8A29E'}
+    ],
+    filler: [
+      {id:'l1',text:'Cap Trader — Konto eröffnen',note:'Online-Antrag · ~30 min',color:'#14B8A6'},
+      {id:'l2',text:'Anthropic Academy — Claude 101 starten',note:'Zwischen Rückkehr von Mama und VHS · ~1h',color:'#3B82F6'},
+      {id:'l3',text:'Austausch Wasserhahn Küche',note:'Optional · Handwerker beauftragen',color:'#A8A29E'},
+      {id:'l4',text:'Makulatur im Schlafzimmer entfernen',note:'Optional',color:'#A8A29E'},
+      {id:'l5',text:'Schlafzimmerwand verputzen',note:'Optional · nach Makulatur',color:'#A8A29E'},
+      {id:'l6',text:'Schlafzimmerwand streichen',note:'Optional · nach Verputzen',color:'#A8A29E'},
+      {id:'l7',text:'Büro aufräumen',note:'Optional',color:'#A8A29E'}
+    ]
+  };
 }
 
-updateClock();
-setInterval(updateClock, 30000);
-
-// ============================================================
-// DOT COLORS
-// ============================================================
-const DOT_COLORS = {
-  pink: '#EC4899',
-  red: '#EF4444',
-  amber: '#F59E0B',
-  teal: '#14B8A6',
-  blue: '#3B82F6',
-  purple: '#8B5CF6',
-  gray: '#A8A29E'
-};
-
-// ============================================================
-// STORAGE
-// ============================================================
-function getStoredDone() {
-  try {
-    const stored = localStorage.getItem('caroline_done');
-    return stored ? JSON.parse(stored) : {};
-  } catch(e) { return {}; }
+function loadTasks() {
+  try { const r=localStorage.getItem(STORAGE_KEY); if(r) return JSON.parse(r); } catch(e){}
+  return defaultTasks();
 }
-
-function setStoredDone(done) {
-  try { localStorage.setItem('caroline_done', JSON.stringify(done)); } catch(e) {}
+function saveTasks() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); } catch(e){}
 }
-
-// Reset done state daily
-function getTodayKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+function todayKey() {
+  const n=new Date(); return `${n.getFullYear()}-${n.getMonth()}-${n.getDate()}`;
 }
-
-let doneState = {};
-const stored = getStoredDone();
-if (stored.date === getTodayKey()) {
-  doneState = stored.done || {};
-} else {
-  doneState = {};
+function loadDone() {
+  try { const r=localStorage.getItem(DONE_KEY); if(r){const d=JSON.parse(r);if(d.date===todayKey())return d.done||{};} } catch(e){}
+  return {};
 }
-
 function saveDone() {
-  setStoredDone({ date: getTodayKey(), done: doneState });
+  try { localStorage.setItem(DONE_KEY, JSON.stringify({date:todayKey(),done:doneState})); } catch(e){}
 }
 
-// ============================================================
-// DRAG & DROP
-// ============================================================
-let dragSrc = null;
-let dragSection = null;
+let tasks = loadTasks();
+let doneState = loadDone();
+let editMode = false;
+let currentSection = null, editingId = null, selectedColor = '#EC4899';
 
-function addDragEvents(card, section) {
-  card.draggable = true;
+// Edit mode
+function toggleEditMode() {
+  editMode = !editMode;
+  document.body.classList.toggle('edit-mode', editMode);
+  const btn = document.getElementById('btn-edit');
+  btn.textContent = editMode ? '✓ Fertig' : '✏️ Bearbeiten';
+  btn.classList.toggle('active', editMode);
+  renderAll();
+}
 
-  card.addEventListener('dragstart', e => {
-    dragSrc = card;
-    dragSection = section;
-    setTimeout(() => card.classList.add('dragging'), 0);
-    e.dataTransfer.effectAllowed = 'move';
+// Modal
+function openModal(section, taskId) {
+  currentSection = section; editingId = taskId||null; selectedColor = '#EC4899';
+  const title = document.getElementById('modal-title');
+  if(taskId) {
+    const t = tasks[section].find(x=>x.id===taskId);
+    document.getElementById('inp-text').value = t.text||'';
+    document.getElementById('inp-time').value = t.time||'';
+    document.getElementById('inp-note').value = t.note||'';
+    selectedColor = t.color||'#EC4899';
+    title.textContent = 'Aufgabe bearbeiten';
+  } else {
+    document.getElementById('inp-text').value='';
+    document.getElementById('inp-time').value='';
+    document.getElementById('inp-note').value='';
+    title.textContent = section==='fixed'?'Termin hinzufügen':section==='required'?'Aufgabe hinzufügen':'Lückenfüller hinzufügen';
+  }
+  buildColorPicker();
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('inp-text').focus(),100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  currentSection=null; editingId=null;
+}
+
+function buildColorPicker() {
+  const p = document.getElementById('color-picker');
+  p.innerHTML='';
+  Object.entries(COLORS).forEach(([,hex])=>{
+    const s=document.createElement('div');
+    s.className='color-swatch'+(hex===selectedColor?' selected':'');
+    s.style.background=hex;
+    s.onclick=()=>{
+      selectedColor=hex;
+      document.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('selected'));
+      s.classList.add('selected');
+    };
+    p.appendChild(s);
   });
+}
 
-  card.addEventListener('dragend', () => {
+function saveTask() {
+  const text=document.getElementById('inp-text').value.trim();
+  if(!text){document.getElementById('inp-text').focus();return;}
+  const task={
+    id: editingId||'u_'+Date.now(),
+    text,
+    time: document.getElementById('inp-time').value.trim()||null,
+    note: document.getElementById('inp-note').value.trim()||null,
+    color: selectedColor
+  };
+  if(editingId){
+    const idx=tasks[currentSection].findIndex(t=>t.id===editingId);
+    if(idx!==-1) tasks[currentSection][idx]=task;
+  } else {
+    tasks[currentSection].push(task);
+  }
+  saveTasks(); closeModal(); renderAll();
+}
+
+function deleteTask(section, id) {
+  tasks[section]=tasks[section].filter(t=>t.id!==id);
+  saveTasks(); renderAll();
+}
+
+// Clock
+const DAYS=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+function updateClock(){
+  const n=new Date();
+  document.getElementById('time-display').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('date-display').textContent=`${DAYS[n.getDay()]}, ${n.getDate()}. ${MONTHS[n.getMonth()]} ${n.getFullYear()}`;
+  const h=n.getHours();
+  document.getElementById('greeting').textContent=h<10?'Guter Start in den Tag 🌤':h<13?'Schöner Vormittag ☀️':h<17?'Guter Nachmittag 🌿':h<20?'Schöner Abend 🌇':'Gute Nacht bald 🌙';
+}
+updateClock(); setInterval(updateClock,30000);
+
+// Drag & Drop
+let dragSrc=null, dragSec=null;
+function addDrag(card, section){
+  card.draggable=true;
+  card.addEventListener('dragstart',e=>{
+    dragSrc=card; dragSec=section;
+    setTimeout(()=>card.classList.add('dragging'),0);
+    e.dataTransfer.effectAllowed='move';
+  });
+  card.addEventListener('dragend',()=>{
     card.classList.remove('dragging');
-    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+    const list=document.getElementById('list-'+section);
+    const order=[...list.querySelectorAll('.task-card')].map(c=>c.dataset.id);
+    tasks[section].sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
+    saveTasks();
   });
-
-  card.addEventListener('dragover', e => {
+  card.addEventListener('dragover',e=>{
     e.preventDefault();
-    if (dragSrc && dragSrc !== card && dragSection === section) {
-      card.classList.add('drag-over');
-    }
-    e.dataTransfer.dropEffect = 'move';
+    if(dragSrc&&dragSrc!==card&&dragSec===section) card.classList.add('drag-over');
   });
-
-  card.addEventListener('dragleave', () => {
-    card.classList.remove('drag-over');
-  });
-
-  card.addEventListener('drop', e => {
-    e.preventDefault();
-    card.classList.remove('drag-over');
-    if (dragSrc && dragSrc !== card && dragSection === section) {
-      const list = card.parentNode;
-      const cards = [...list.querySelectorAll('.task-card')];
-      const srcIdx = cards.indexOf(dragSrc);
-      const tgtIdx = cards.indexOf(card);
-      if (srcIdx < tgtIdx) {
-        list.insertBefore(dragSrc, card.nextSibling);
-      } else {
-        list.insertBefore(dragSrc, card);
-      }
+  card.addEventListener('dragleave',()=>card.classList.remove('drag-over'));
+  card.addEventListener('drop',e=>{
+    e.preventDefault(); card.classList.remove('drag-over');
+    if(dragSrc&&dragSrc!==card&&dragSec===section){
+      const list=card.parentNode;
+      const cards=[...list.querySelectorAll('.task-card')];
+      const si=cards.indexOf(dragSrc),ti=cards.indexOf(card);
+      if(si<ti) list.insertBefore(dragSrc,card.nextSibling);
+      else list.insertBefore(dragSrc,card);
     }
   });
 }
 
-// ============================================================
-// RENDER
-// ============================================================
-function renderTask(task, section) {
-  const card = document.createElement('div');
-  card.className = 'task-card' + (doneState[task.id] ? ' done-card' : '');
-  card.dataset.id = task.id;
+// Render
+function makeCard(task, section, isAuto){
+  const card=document.createElement('div');
+  card.className='task-card'+(doneState[task.id]?' done-card':'');
+  card.dataset.id=task.id;
 
-  const dot = document.createElement('div');
-  dot.className = 'type-dot';
-  dot.style.background = DOT_COLORS[task.type] || DOT_COLORS.gray;
+  const dot=document.createElement('div');
+  dot.className='type-dot';
+  dot.style.background=task.color||'#A8A29E';
+  if(editMode&&!isAuto){dot.style.cursor='pointer';dot.onclick=()=>openModal(section,task.id);}
 
-  const content = document.createElement('div');
-  content.className = 'task-content';
+  const content=document.createElement('div');
+  content.className='task-content';
+  if(editMode&&!isAuto){content.style.cursor='pointer';content.onclick=()=>openModal(section,task.id);}
 
-  const textEl = document.createElement('div');
-  textEl.className = 'task-text';
-  textEl.textContent = task.text;
-
-  if (task.badge) {
-    const badge = document.createElement('span');
-    badge.className = `badge badge-${task.badge.type}`;
-    badge.textContent = task.badge.text;
-    textEl.appendChild(badge);
-  }
-
+  const textEl=document.createElement('div');
+  textEl.className='task-text';
+  textEl.textContent=task.text;
   content.appendChild(textEl);
+  if(task.time){const t=document.createElement('div');t.className='task-time';t.textContent=task.time;content.appendChild(t);}
+  if(task.note){const n=document.createElement('div');n.className='task-note';n.textContent='→ '+task.note;content.appendChild(n);}
 
-  if (task.time) {
-    const timeEl = document.createElement('div');
-    timeEl.className = 'task-time';
-    timeEl.textContent = task.time;
-    content.appendChild(timeEl);
-  }
+  const btnDone=document.createElement('button');
+  btnDone.className='btn-done';
+  btnDone.innerHTML=doneState[task.id]?'✓':'';
+  btnDone.onclick=e=>{e.stopPropagation();doneState[task.id]=!doneState[task.id];saveDone();renderAll();};
 
-  if (task.note) {
-    const noteEl = document.createElement('div');
-    noteEl.className = 'task-note';
-    noteEl.textContent = '→ ' + task.note;
-    content.appendChild(noteEl);
-  }
+  const btnDel=document.createElement('button');
+  btnDel.className='btn-delete';
+  btnDel.innerHTML='×';
+  btnDel.onclick=e=>{e.stopPropagation();if(confirm('Aufgabe löschen?'))deleteTask(section,task.id);};
 
-  // Done button
-  const actions = document.createElement('div');
-  actions.className = 'task-actions';
-
-  const btnDone = document.createElement('button');
-  btnDone.className = 'btn-done';
-  btnDone.title = doneState[task.id] ? 'Als offen markieren' : 'Als erledigt markieren';
-  btnDone.innerHTML = doneState[task.id] ? '✓' : '';
-  btnDone.addEventListener('click', (e) => {
-    e.stopPropagation();
-    doneState[task.id] = !doneState[task.id];
-    saveDone();
-    renderAll();
-  });
-
-  actions.appendChild(btnDone);
-
-  // Drag handle
-  const handle = document.createElement('div');
-  handle.className = 'drag-handle';
-  handle.innerHTML = '<span></span><span></span><span></span>';
+  const handle=document.createElement('div');
+  handle.className='drag-handle';
+  handle.innerHTML='<span></span><span></span><span></span>';
 
   card.appendChild(dot);
   card.appendChild(content);
-  card.appendChild(actions);
+  card.appendChild(btnDone);
+  if(!isAuto) card.appendChild(btnDel);
   card.appendChild(handle);
-
-  addDragEvents(card, section);
+  if(!isAuto) addDrag(card, section);
   return card;
 }
 
-function renderSection(tasks, listId, countId) {
-  const list = document.getElementById(listId);
-  const countEl = document.getElementById(countId);
-  list.innerHTML = '';
-
-  if (!tasks || tasks.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'empty';
-    empty.textContent = 'Keine Aufgaben für heute';
-    list.appendChild(empty);
-    countEl.textContent = '';
+function renderSection(sectionTasks, listId, countId, section, extra){
+  const list=document.getElementById(listId);
+  const countEl=document.getElementById(countId);
+  list.innerHTML='';
+  const all=[...(sectionTasks||[]),...(extra||[])];
+  if(all.length===0){
+    const e=document.createElement('div');
+    e.className='empty';
+    e.textContent=editMode?'Noch keine Einträge — tippe + um eine hinzuzufügen':'Keine Aufgaben für heute';
+    list.appendChild(e);
+    countEl.textContent='';
     return;
   }
-
-  const done = tasks.filter(t => doneState[t.id]).length;
-  countEl.textContent = `${done}/${tasks.length}`;
-
-  tasks.forEach(task => {
-    list.appendChild(renderTask(task, listId));
-  });
+  const done=all.filter(t=>doneState[t.id]).length;
+  countEl.textContent=`${done}/${all.length}`;
+  sectionTasks.forEach(t=>list.appendChild(makeCard(t,section,false)));
+  (extra||[]).forEach(t=>list.appendChild(makeCard(t,section,true)));
 }
 
-function updateProgress() {
-  const all = [...TASKS.fixed, ...TASKS.required, ...TASKS.filler];
-  const total = all.length;
-  const done = all.filter(t => doneState[t.id]).length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = `${done} von ${total} Aufgaben erledigt`;
+function renderAll(){
+  const social=getSocialTasks();
+  const weekly=getWeeklyRoutines();
+  const daily=getDailyRoutines();
+  renderSection(tasks.fixed,'list-fixed','count-fixed','fixed');
+  renderSection(tasks.required,'list-required','count-required','required');
+  renderSection(tasks.filler,'list-filler','count-filler','filler',social);
+  renderSection([...daily,...weekly],'list-routines','count-routines','routines');
+  const all=[...tasks.fixed,...tasks.required,...tasks.filler,...social,...daily,...weekly];
+  const done=all.filter(t=>doneState[t.id]).length;
+  const pct=all.length>0?Math.round(done/all.length*100):0;
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-label').textContent=`${done} von ${all.length} Aufgaben erledigt`;
 }
 
-function renderAll() {
-  const socialTasks = getSocialMediaTasks();
-  const allFiller = [...TASKS.filler, ...socialTasks];
-  renderSection(TASKS.fixed, 'list-fixed', 'count-fixed');
-  renderSection(TASKS.required, 'list-required', 'count-required');
-  renderSection(allFiller, 'list-filler', 'count-filler');
-
-  // Progress über alle Aufgaben inkl. Social
-  const all = [...TASKS.fixed, ...TASKS.required, ...allFiller];
-  const total = all.length;
-  const done = all.filter(t => doneState[t.id]).length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-label').textContent = `${done} von ${total} Aufgaben erledigt`;
-}
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay'))closeModal();
+});
 
 renderAll();
 </script>
